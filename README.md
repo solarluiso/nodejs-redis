@@ -29,16 +29,16 @@ npm install
 
 ## Usage
 
-1. Start the Redis server:
+1. Start the Redis service using Docker Compose:
 
 ```sh
-redis-server
+docker-compose up -d
 ```
 
 2. Run the application:
 
 ```sh
-node app.js
+node server.js
 ```
 
 ## Features
