@@ -9,7 +9,7 @@ const client = createClient({
   port: 6379,
 });
 
-app.use(responseTime());
+app.use(responseTime()); // Middleware to calculate response time
 app.get("/characters", async (req, res) => {
   // Try to get the data from Redis store
   const reply = await client.get("characters");
@@ -23,6 +23,26 @@ app.get("/characters", async (req, res) => {
 
   // Save the API response in Redis store
   const saveResult = await client.set("characters", JSON.stringify(data));
+  console.log("using API", saveResult);
+
+  return res.json(data);
+});
+app.get("/characters/:id", async (req, res) => {
+  const { id } = req.params;
+
+  // Try to get the data from Redis store
+  const reply = await client.get(id);
+  if (reply) {
+    console.log("using cache");
+    return res.json(JSON.parse(reply));
+  }
+
+  const { data } = await axios.get(
+    `https://rickandmortyapi.com/api/character/${id}`
+  );
+
+  // Save the API response in Redis store
+  const saveResult = await client.set(id, JSON.stringify(data));
   console.log("using API", saveResult);
 
   return res.json(data);
